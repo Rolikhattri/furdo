@@ -25,7 +25,7 @@ class UsersController < ApplicationController
   # POST /users.json
   def create
     @user = User.new(user_params)
-    
+
     respond_to do |format|
       if @user.save
         if params[:user][:auto_generate] == "1"
@@ -83,11 +83,11 @@ class UsersController < ApplicationController
         net_amount=user.total_amount
       end
       monthly_amount=net_amount/user.emi_option
-      Installment.create(:due_date=>Date.today, :payment_date=>Date.today, :status=>"paid",:amount=>monthly_amount,:user_id=>user.id)
+      # Installment.create(:due_date=>Date.today, :payment_date=>Date.today, :status=>"paid",:amount=>monthly_amount,:user_id=>user.id)
         d= Date.today
-      for i in 2..(user.emi_option)
-        d=d+(12/user.emi_option).months
+      for i in 1..(user.emi_option)
         Installment.create(:due_date=>d, :status=>"csheduled",:amount=>monthly_amount,:user_id=>user.id)
+        d=d+(12/user.emi_option).months
       end
     end
 

@@ -73,5 +73,5 @@
 <% end %>
 <br>
 
-<%= button_to 'Add Installment', new_installment_path, :method => "get" %>
+<%= button_to 'Add Installment', new_installment_path, :method => "get", :params => {:user_id => @user.id} %>
 

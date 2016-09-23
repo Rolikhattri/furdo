@@ -15,6 +15,7 @@ class InstallmentsController < ApplicationController
   # GET /installments/new
   def new
     @installment = Installment.new
+    @installment.user_id = params[:user_id]
   end
 
   # GET /installments/1/edit
