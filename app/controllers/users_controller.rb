@@ -25,7 +25,7 @@ class UsersController < ApplicationController
   # POST /users.json
   def create
     @user = User.new(user_params)
-
+    
     respond_to do |format|
       if @user.save
         if params[:user][:auto_generate] == "1"
@@ -45,6 +45,7 @@ class UsersController < ApplicationController
   def update
     respond_to do |format|
       if @user.update(user_params)
+        update_installments(@user)
         format.html { redirect_to @user, notice: 'User was successfully updated.' }
         format.json { render :show, status: :ok, location: @user }
       else
@@ -76,17 +77,34 @@ class UsersController < ApplicationController
     end
 
     def create_installments(user)
-    if user.discount
-      net_amount=user.total_amount-user.percentage
-    else
-      net_amount=user.total_amount
+      if user.discount
+        net_amount=user.total_amount-user.percentage
+      else
+        net_amount=user.total_amount
+      end
+      monthly_amount=net_amount/user.emi_option
+      Installment.create(:due_date=>Date.today, :payment_date=>Date.today, :status=>"paid",:amount=>monthly_amount,:user_id=>user.id)
+        d= Date.today
+      for i in 2..(user.emi_option)
+        d=d+(12/user.emi_option).months
+        Installment.create(:due_date=>d, :status=>"csheduled",:amount=>monthly_amount,:user_id=>user.id)
+      end
     end
-    monthly_amount=net_amount/user.emi_option
-    Installment.create(:due_date=>Date.today, :payment_date=>Date.today, :status=>"Paid",:amount=>monthly_amount,:user_id=>user.id)
-     d= Date.today
-     for i in 2..(user.emi_option)
-     d=d+(12/user.emi_option).months
-     Installment.create(:due_date=>d, :status=>"Scheduled",:amount=>monthly_amount,:user_id=>user.id)
-end
-end
+
+    def update_installments(user)
+      old_amount = user.installments.sum(:amount)
+      difference = user.total_amount - old_amount
+      if difference != 0
+        remaining_installments = user.installments.where("status != ?", 'paid')
+        ri_count = remaining_installments.count
+        if ri_count == 0
+          Installment.create(:due_date => Date.today, :status => "scheduled", :amount => difference, :user_id => user.id)
+          user.update_attributes(:emi_option => user.emi_option + 1)
+        else
+          remaining_installments.each do |inst|
+            inst.update_attributes(:amount => inst.amount + difference/ri_count.to_f)
+          end
+        end
+      end
+    end
 end

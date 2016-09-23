@@ -1,3 +1,13 @@
 <h1>New User</h1>
 
 <%= render 'form' %>
+
+
+ <script type="text/javascript">
+	$(document).ready(function(){
+        $("#user_auto_generate").on('change', function(){
+            $("#user_emi_option").prop('disabled', !($("#user_auto_generate").val() == "1"));
+        });
+
+});
+</script>

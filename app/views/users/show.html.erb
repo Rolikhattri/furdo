@@ -20,52 +20,58 @@
   <%= @user.discount %>
 </p>
 
-<p>
-  <strong>Amount:</strong>
-  <%= @user.percentage %>
-</p>
+<% if @user.discount %>
+  <p>
+    <strong>Discount Amount:</strong>
+    <%= @user.percentage %>
+  </p>
+<% end %>
 
-<p>
-  <strong>Installments:</strong>
-  <%= @user.emi_option %>
-</p>
+<% if @user.emi_option.present? %>
+  <p>
+    <strong>Number of Installments:</strong>
+    <%= @user.emi_option %>
+  </p>
+<% end %>
 
-<%= link_to 'Edit', edit_user_path(@user) %> |
-<%= link_to 'Back', users_path %>
-
+<%= button_to 'Edit User', edit_user_path(@user), :method => "get" %>
+<br><br>
 
 <%@installments = @user.installments%>
-<p id="notice"><%= notice %></p>
 
-<h1>Listing Installments</h1>
+<% if @installments.count > 0 %>
 
-<table>
-  <thead>
-    <tr>
-      <th>Due date</th>
-      <th>Payment date</th>
-      <th>Status</th>
-      <th>Amount</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+  <h1>Listing Installments</h1>
 
-  <tbody>
-    <% @installments.each do |installment| %>
+  <table>
+    <thead>
       <tr>
-        <td><%= installment.due_date %></td>
-        <td><%= installment.payment_date %></td>
-        <td><%= installment.status %></td>
-        <td><%= installment.amount %></td>
-        <td><%= link_to 'Show', installment %></td>
-        <td><%= link_to 'Edit', edit_installment_path(installment) %></td>
-        <td><%= link_to 'Destroy', installment, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <th>Due date</th>
+        <th>Payment date</th>
+        <th>Status</th>
+        <th>Amount</th>
+        <th colspan="3"></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
 
+    <tbody>
+      <% @installments.each do |installment| %>
+        <tr>
+          <td><%= installment.due_date %></td>
+          <td><%= installment.payment_date %></td>
+          <td><%= installment.status %></td>
+          <td><%= installment.amount %></td>
+          <% if installment.status.downcase != 'paid' %>
+            <td><%= link_to 'Edit', edit_installment_path(installment) %></td>
+            <td><%= link_to 'Destroy', installment, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+<% end %>
 <br>
 
-<%= link_to 'New Installment', new_installment_path %>
+<%= button_to 'Add Installment', new_installment_path, :method => "get" %>
 

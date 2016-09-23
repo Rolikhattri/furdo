@@ -21,5 +21,4 @@
 </p>
 
 
-<%= link_to 'Edit', edit_installment_path(@installment) %> |
-<%= link_to 'Back', installments_path %>
+<%= button_to 'Edit', edit_installment_path(@installment), :method => "get" %>
