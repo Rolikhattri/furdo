@@ -86,14 +86,14 @@ class UsersController < ApplicationController
       # Installment.create(:due_date=>Date.today, :payment_date=>Date.today, :status=>"paid",:amount=>monthly_amount,:user_id=>user.id)
         d= Date.today
       for i in 1..(user.emi_option)
-        Installment.create(:due_date=>d, :status=>"csheduled",:amount=>monthly_amount,:user_id=>user.id)
+        Installment.create(:due_date=>d, :status=>"scheduled",:amount=>monthly_amount,:user_id=>user.id)
         d=d+(12/user.emi_option).months
       end
     end
 
     def update_installments(user)
       old_amount = user.installments.sum(:amount)
-      difference = user.total_amount - old_amount
+      difference = user.total_amount - old_amount - user.percentage
       if difference != 0
         remaining_installments = user.installments.where("status != ?", 'paid')
         ri_count = remaining_installments.count

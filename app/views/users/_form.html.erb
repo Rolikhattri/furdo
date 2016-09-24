@@ -25,8 +25,8 @@
   </div>
   <div class="field">
     <%= f.label :discount %><br>
-    <%= f.radio_button :discount,"true"%>YES
-    <%= f.radio_button :discount,"false"%>NO
+    <%= f.radio_button :discount,"true"%>Yes
+    <%= f.radio_button :discount,"false", :checked => true%>No
   </div>
   <div class="field">
     <%= f.label :amount %><br>
@@ -34,7 +34,7 @@
   </div>
 
   <div class="field">
-    <%= f.check_box :auto_generate, :checked => true%> Automatically generate installments
+    <%= f.check_box :auto_generate, :checked => true %> Automatically generate installments
   </div>
   
   <div class="field">
