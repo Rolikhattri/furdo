@@ -29,6 +29,7 @@ class InstallmentsController < ApplicationController
 
     respond_to do |format|
       if @installment.save
+        update_user(@installment.user)
         format.html { redirect_to @installment, notice: 'Installment was successfully created.' }
         format.json { render :show, status: :created, location: @installment }
       else
@@ -55,9 +56,11 @@ class InstallmentsController < ApplicationController
   # DELETE /installments/1
   # DELETE /installments/1.json
   def destroy
+    @user = @installment.user
     @installment.destroy
+    update_user(@user)
     respond_to do |format|
-      format.html { redirect_to installments_url, notice: 'Installment was successfully destroyed.' }
+      format.html { redirect_to user_url(@user), notice: 'Installment was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
@@ -71,6 +74,10 @@ class InstallmentsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def installment_params
       params.require(:installment).permit(:due_date, :payment_date, :status, :amount, :user_id)
+    end
+
+    def update_user(user)
+      user.update_attributes(:emi_option => user.installments.count)
     end
 
   
